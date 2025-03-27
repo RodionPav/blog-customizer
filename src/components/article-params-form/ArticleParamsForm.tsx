@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
@@ -16,16 +16,18 @@ import {
 	fontColors,
 	backgroundColors,
 	fontSizeOptions,
+	ArticleStateType,
 } from 'src/constants/articleProps';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 
 type ArticleParamsFormProps = {
-	onChange: (articleFormState: any) => void;
+	onChange: (articleFormState: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm = ({ onChange }: ArticleParamsFormProps) => {
-	const [initialState] = useState(defaultArticleState);
 	const [isOpen, setIsOpen] = useState(false);
-	const [articleFormState, setArticleFormState] = useState(initialState);
+	const [articleFormState, setArticleFormState] = useState(defaultArticleState);
+	const sidebarRef = useRef<HTMLDivElement | null>(null);
 
 	const handleApply = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -34,21 +36,33 @@ export const ArticleParamsForm = ({ onChange }: ArticleParamsFormProps) => {
 
 	const handleReset = (event: React.FormEvent) => {
 		event.preventDefault();
+		setArticleFormState(defaultArticleState);
 		onChange(defaultArticleState);
-		setArticleFormState(initialState);
 	};
 
 	const toggleState = () => {
 		setIsOpen((prev) => !prev);
 	};
 
-	const handleInputChange = (key: string, value: any) => {
+	const handleInputChange = <T extends keyof ArticleStateType>(
+		key: T,
+		value: ArticleStateType[T]
+	) => {
 		setArticleFormState((prev) => ({ ...prev, [key]: value }));
 	};
+
+	useOutsideClickClose({
+		isOpen,
+		rootRef: sidebarRef,
+		onClose: () => setIsOpen(false),
+		onChange: setIsOpen,
+	});
+
 	return (
 		<>
 			<ArrowButton isOpen={isOpen} onClick={toggleState} />
 			<aside
+				ref={sidebarRef}
 				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
 				<form
 					className={styles.form}

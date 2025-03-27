@@ -4,7 +4,10 @@ import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
 import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
-import { defaultArticleState } from './constants/articleProps';
+import {
+	ArticleStateType,
+	defaultArticleState,
+} from './constants/articleProps';
 
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
@@ -14,7 +17,7 @@ const root = createRoot(domNode);
 
 const App = () => {
 	const [articleState, setArticleState] = useState(defaultArticleState);
-	const handleChange = (updatedState: any) => {
+	const handleChange = (updatedState: ArticleStateType) => {
 		setArticleState(updatedState);
 	};
 
