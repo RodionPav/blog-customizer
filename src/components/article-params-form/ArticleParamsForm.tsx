@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import styles from './ArticleParamsForm.module.scss';
 import clsx from 'clsx';
@@ -51,12 +51,23 @@ export const ArticleParamsForm = ({ onChange }: ArticleParamsFormProps) => {
 		setArticleFormState((prev) => ({ ...prev, [key]: value }));
 	};
 
-	useOutsideClickClose({
-		isOpen,
-		rootRef: sidebarRef,
-		onClose: () => setIsOpen(false),
-		onChange: setIsOpen,
-	});
+	useEffect(() => {  
+		const handleClickOutside = (event: MouseEvent) => {  
+			if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {  
+				setIsOpen(false);  
+			}  
+		};  
+
+		if (isOpen) {  
+			window.addEventListener('mousedown', handleClickOutside);  
+		} else {  
+			window.removeEventListener('mousedown', handleClickOutside);  
+		}  
+
+		return () => {  
+			window.removeEventListener('mousedown', handleClickOutside);  
+		};  
+	}, [isOpen]); 
 
 	return (
 		<>
